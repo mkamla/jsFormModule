@@ -31,7 +31,7 @@
 			url: actionURL,
 			data: data,
 			success:  function(data){
-				if(data.length){
+				if(data.length && callback){
 					callback();
 				}
 			}
