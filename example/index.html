@@ -3,11 +3,22 @@
 <head>
 	<meta charset="utf-8" />
 	<meta name="viewport" content="initial-scale=1.0,maximum-scale=1.0,user-scalable=no" />
-	<title></title>
-
+	<title>jsFormModule | Example</title>
+	<link rel="stylesheet" type="text/css" href="css/main.css" />
+	<script type="text/javascript" src="js/jquery-1.10.min.js"></script>
 	<script type="text/javascript" src="../dist/formModule.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function(){
+			formHandler.init('#sample-form','/bin/contact_form.php');
+		});
+	</script>
 </head>
 <body>
-
+	<form id="sample-form" name="sample-form" method="POST" action="">
+		<input type="text" class="required-field" name="name" placeholder="Name" />
+		<input type="text" class="required-field" name="email" placeholder="Email" />
+		<textarea class="required-field" name="message" placeholder="Leave a message"></textarea>
+		<input class="btn" type="submit" value="Submit Form" />
+	</form>
 </body>
 </html>
