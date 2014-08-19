@@ -165,9 +165,9 @@
 
 	var init = function(target,actionURL){
 
-		view.form = $(target),
-		view.formParent = $(target).parent(),
-		config.actionURL = (actionURL!==undefined)? actionURL : 'console',
+		view.form = $(target);
+		view.formParent = $(target).parent();
+		config.actionURL = (actionURL!==undefined)? actionURL : 'console';
 		view.submitBtn = view.form.find('input[type="submit"]');
 
 		if(view.submitBtn){
