@@ -40,6 +40,10 @@ textarea {
 	resize:none;
 }
 
+input.input-error, select.input-error, textarea.input-error {
+	background-color:#ffc0c0;
+}
+
 form > .btn {
 	padding:10px 15px;
 	border:solid 1px #CCC;
@@ -48,6 +52,10 @@ form > .btn {
 	display:inline-block;
 	float:left;
 	overflow:hidden;
+}
+
+form > .btn.disabled {
+	opacity:0.5;
 }
 
 input[type="submit"] {
