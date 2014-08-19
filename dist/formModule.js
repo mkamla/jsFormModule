@@ -3,12 +3,11 @@
 	var model = {},
 		view = {},
 		controller = {},
-		actionURL;
+		config = {};
 
 	//private functions
 
 	model.formData = {};
-	model.validated = null;
 	model.validateField = function(data,fieldName){
 		if(fieldName==='name' && data.length >= 4){
 			model.formData[fieldName] = data;
@@ -18,45 +17,68 @@
 			model.formData[fieldName] = data;
 		} else {
 			//show form error view
+			console.log(fieldName+' not valiated');
 			model.validated = false;
+			controller.enableSubmit();
 			view.validationError(fieldName);
 			return false;
 		}
 	};
 
 	model.submit = function(data,callback){	
-		//Sending form data to server'	
-		$.ajax({
-			type: 'POST',
-			url: actionURL,
-			data: data,
-			success:  function(data){
-				if(data.length && callback){
-					callback();
+		//Sending form data to server'
+
+		if(config.actionURL==='console'){
+			console.log('Sending form data: '+data);
+		} else {
+			$.ajax({
+				type: 'POST',
+				url: config.actionURL,
+				data: data,
+				success:  function(data){
+					if(data.length && callback){
+						callback();
+					}
 				}
-			}
-		});
+			});
+		}
+		
+		view.clearForm();
+		controller.enableSubmit();
 	};
 
 	model.validate = function(form){
 		var requiredFields = {},
 		formField = view.form.find('input[type="text"],input[type="email"],textarea');
 
+		model.validated = undefined;
+		controller.disableSubmit();
 		view.removeErrorClass();
 
 		$.each(formField,function(){
 			var field = $(this),
 				fieldName = field.attr('name'),
 				fieldValue = field.val(),
-				fieldValidation = field.attr('data-validation');
-			if(fieldValidation ==='required'){
+				fieldClass = field.attr('class'),
+				fieldValidation;
+
+			if(fieldClass){
+				fieldClass = fieldClass.split(' ');
+				for(var i in fieldClass){
+					if(fieldClass[i]==='required'){
+						fieldValidation = true;
+					}
+				}
+			}
+
+			if(fieldValidation){
 				model.validateField(fieldValue,fieldName);
 			} else {
 				model.formData[fieldName] = fieldValue;
 			}
 		});
 
-		if(typeof(model.validated)==='undefined' || model.validated!== false){
+		if(typeof(model.validated)==='undefined' && model.validated!== false){
 			// Submit the form data
 			model.submit(model.formData);
 		}
@@ -71,18 +93,18 @@
 	//---VIEW
 
 	view.hideForm = function(){
-		self.form.hide();
+		view.form.hide();
 	};
 
 	view.showForm = function(){
 		if($('.form-success').length){
 			$('.form-success').remove();
 		}
-		self.form.show();
+		view.form.show();
 	};
 
 	view.clearForm = function(){
-		var formField = self.form.find('input[type="text"],input[type="email"],textarea');
+		var formField = view.form.find('input[type="text"],input[type="email"],textarea');
 
 		$.each(formField,function(){
 			var field = $(this);
@@ -91,11 +113,11 @@
 	};
 
 	view.removeErrorClass = function(){
-		view.form.find('input, textrea').removeClass('form-input-error');
+		view.form.find('input, textrea').removeClass('input-error');
 	};
 
 	view.validationError = function(fieldName){
-		view.form.find('[name="'+fieldName+'"]').focus().addClass('form-input-error');
+		view.form.find('[name="'+fieldName+'"]').focus().addClass('input-error');
 	};
 
 	view.sendError = function(){
@@ -127,23 +149,29 @@
 		model.validate(view.form);
 	};
 
+	controller.disableSubmit = function(){
+		view.submitBtn.unbind('click').addClass('disabled');
+	};
+
+	controller.enableSubmit = function(){
+		view.submitBtn.bind('click',function(e){
+			controller.formSubmit(e);
+		}).removeClass('disabled');
+	};
+
 	var controllerPublic = {
 		formSubmit: controller.formSubmit
 	};
 
 	var init = function(target,actionURL){
-		console.log('ContactForm initialized');
 
-		view.form = $(target);
-		view.formParent = $(target).parent();
-		actionURL = actionURL;
-
+		view.form = $(target),
+		view.formParent = $(target).parent(),
+		config.actionURL = (actionURL!==undefined)? actionURL : 'console',
 		view.submitBtn = view.form.find('input[type="submit"]');
 
 		if(view.submitBtn){
-			view.submitBtn.bind('click',function(e){
-				controller.formSubmit(e);
-			});
+			controller.enableSubmit();
 		}
 	};
 
