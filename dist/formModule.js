@@ -11,7 +11,7 @@
 	model.validateField = function(data,fieldName){
 		if(fieldName==='name' && data.length >= 4){
 			model.formData[fieldName] = data;
-		}else if(fieldName==='email' && data.length >= 6){
+		}else if(fieldName==='email' && data.length >= 6 && data.indexOf('@')>-1){
 			model.formData[fieldName] = data;
 		}else if(fieldName==='message' && data.length >= 4){
 			model.formData[fieldName] = data;
