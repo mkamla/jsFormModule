@@ -9,25 +9,55 @@
 
 	model.formData = {};
 	model.validateField = function(data,fieldName){
-		if(fieldName==='name' && data.length >= 4){
-			model.formData[fieldName] = data;
-		}else if(fieldName==='email' && data.length >= 6 && data.indexOf('@')>-1){
-			model.formData[fieldName] = data;
-		}else if(fieldName==='message' && data.length >= 4){
-			model.formData[fieldName] = data;
-		} else {
-			//show form error view
-			console.log(fieldName+' not valiated');
-			model.validated = false;
-			controller.enableSubmit();
-			view.validationError(fieldName);
-			return false;
+		switch(fieldName) {
+			case 'email':
+				if(data.length >= 6 && data.indexOf('@')> -1){
+					model.formData[fieldName] = data;
+				} else {
+					model.validateFieldError(fieldName);					
+				}
+				break;
+			case 'phone':
+				if(data.length >= 7){
+					model.formData[fieldName] = data;
+				} else {
+					model.validateFieldError(fieldName);					
+				}
+				break;
+			case 'state':
+				if(data.length > 2){
+					model.formData[fieldName] = data;
+				} else {
+					model.validateFieldError(fieldName);					
+				}
+				break;
+			case 'zip':
+				if(data.length >= 5){
+					model.formData[fieldName] = data;
+				} else {
+					model.validateFieldError(fieldName);					
+				}
+				break;
+			default:
+				if(data.length > 1){
+					model.formData[fieldName] = data;
+				} else {
+					model.validateFieldError(fieldName);					
+				}
+				break;
 		}
+	};
+
+	model.validateFieldError = function(fieldName){
+		console.log(fieldName+' not valiated');
+		model.validated = false;
+		controller.enableSubmit();
+		view.validationError(fieldName);
+		return false;
 	};
 
 	model.submit = function(data,callback){	
 		//Sending form data to server'
-
 		if(config.actionURL==='console'){
 			console.log('Sending form data: '+data);
 		} else {
