@@ -206,7 +206,7 @@
 	};
 
 	// public methods and properties to be returned
-	var formHandler = {
+	var formModule = {
 		model: modelPublic,
 		view: viewPublic,
 		controller: controllerPublic,
@@ -216,12 +216,12 @@
 	//transport
 	if(typeof(define) === 'function' && define.amd){
 		//AMD
-		define(formHandler);
+		define(formModule);
 	} else if (typeof(exports)==='object'){
 		//CommonJS
-		module.exports = formHandler;
+		module.exports = formModule;
 	} else {
 		//browser global
-		window.formHandler = formHandler;
+		window.formModule = formModule;
 	}
 }(jQuery,window));
