@@ -1,0 +1,26 @@
+{
+  "name": "js-form-module",
+  "description": "A modular javascript/jQuery form validator with AJAX form processing",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/mkamla/jsFormModule.git"
+  },
+  "authors": [
+    "Micah Kamla <micahkamla@gmail.com> (http://mkamla.com)"
+  ],
+  "main": "./dist/formModule.js",
+  "ignore": [
+    "example",
+    "dist/lib"
+  ],
+  "license": "MIT",
+  "keywords": [
+    "form",
+    "form module",
+    "js form validator",
+    "ajax form"
+  ],
+  "dependencies": {
+    "jquery": "1.10"
+  }
+}
