@@ -8,44 +8,63 @@
 	//private functions
 
 	model.formData = {};
-	model.validateField = function(data,fieldName){
-		switch(fieldName) {
-			case 'email':
-				if(data.length >= 6 && data.indexOf('@')> -1){
-					model.formData[fieldName] = data;
-				} else {
-					model.validateFieldError(fieldName);					
-				}
-				break;
-			case 'phone':
-				if(data.length >= 7){
-					model.formData[fieldName] = data;
-				} else {
-					model.validateFieldError(fieldName);					
-				}
-				break;
-			case 'state':
-				if(data.length > 2){
-					model.formData[fieldName] = data;
-				} else {
-					model.validateFieldError(fieldName);					
-				}
-				break;
-			case 'zip':
-				if(data.length >= 5){
-					model.formData[fieldName] = data;
-				} else {
-					model.validateFieldError(fieldName);					
-				}
-				break;
-			default:
-				if(data.length > 1){
-					model.formData[fieldName] = data;
-				} else {
-					model.validateFieldError(fieldName);					
-				}
-				break;
+	model.validateField = function(data,formElement,fieldType,fieldName){
+		if(formElement==='INPUT'){
+			switch(fieldType){
+				case 'text':
+					if(data.length > 1){
+						model.formData[fieldName] = data;
+					} else {
+						model.validateFieldError(fieldName);					
+					}
+					break;
+				case 'email':
+					if(data.length >= 6 && data.indexOf('@')> -1){
+						model.formData[fieldName] = data;
+					} else {
+						model.validateFieldError(fieldName);					
+					}
+					break;
+				case 'tel':
+					if(data.length >= 7){
+						model.formData[fieldName] = data;
+					} else {
+						model.validateFieldError(fieldName);					
+					}
+					break;
+				case 'checkbox':
+					if(data.length){
+						model.formData[fieldName] = data;
+					} else {
+						model.validateFieldError(fieldName);
+					}
+					break;
+				case 'radio':
+					if(data.length){
+						model.formData[fieldName] = data;
+					} else {
+						model.validateFieldError(fieldName);
+					}
+					break;
+				default:
+					if(data.length){
+						model.formData[fieldName] = data;
+					} else {
+						model.validateFieldError(fieldName);
+					}
+					break;
+			}
+		} else if (formElement==='TEXTAREA' || formElement==='SELECT'){
+			if(data.length){
+				model.formData[fieldName] = data;
+			} else {
+				model.validateFieldError(fieldName);
+			}
+		} else {
+			//unknown or unsupported form element warning message
+			console.log('Warning: '+formElement+' type="'+fieldType+'" isn\'t supported as a required field');
 		}
+		
 	};
 
 	model.validateFieldError = function(fieldName){
@@ -79,7 +98,7 @@
 
 	model.validate = function(form){
 		var requiredFields = {},
-		formField = view.form.find('input[type="text"],input[type="email"],textarea');
+		formField = view.form.find('input,select,textarea');
 
 		model.validated = undefined;
 		controller.disableSubmit();
@@ -87,9 +106,11 @@
 
 		$.each(formField,function(){
 			var field = $(this),
+				formElement = $(this).prop('tagName'),
 				fieldName = field.attr('name'),
 				fieldValue = field.val(),
 				fieldClass = field.attr('class'),
+				fieldType = field.attr('type'),
 				fieldValidation;
 
 			if(fieldClass){
@@ -102,7 +123,7 @@
 			}
 
 			if(fieldValidation){
-				model.validateField(fieldValue,fieldName);
+				model.validateField(fieldValue,formElement,fieldType,fieldName);
 			} else {
 				model.formData[fieldName] = fieldValue;
 			}
@@ -194,7 +215,6 @@
 	};
 
 	var init = function(target,actionURL){
-
 		view.form = $(target);
 		view.formParent = $(target).parent();
 		config.actionURL = (actionURL!==undefined)? actionURL : 'console';
@@ -205,7 +225,7 @@
 		}
 	};
 
-	// public methods and properties to be returned
+	// public methods and properties
 	var formModule = {
 		model: modelPublic,
 		view: viewPublic,
