@@ -3,13 +3,17 @@
 	var model = {},
 		view = {},
 		controller = {},
-		config = {};
+		config = {
+			//Configuration Defaults
+			actionURL: 'console',
+			sendSuccess: view.sendSuccess
+		};
 
 	//private functions
 
 	model.formData = {};
 	model.validateField = function(data,formElement,fieldType,fieldName){
-		if(formElement==='INPUT'){
+		if(formElement==='INPUT' && fieldType!== 'submit'){
 			switch(fieldType){
 				case 'text':
 					if(data.length > 1){
@@ -75,23 +79,28 @@
 		return false;
 	};
 
-	model.submit = function(data,callback){	
+	model.submit = function(data){	
 		//Sending form data to server'
 		if(config.actionURL==='console'){
-			console.log('Sending form data: '+data);
+			for (var i in data){
+				console.log('Sending form data: '+data[i]);	
+			}
 		} else {
 			$.ajax({
 				type: 'POST',
 				url: config.actionURL,
 				data: data,
 				success:  function(data){
-					if(data.length && callback){
-						callback();
+					if(data.length && config.sendSuccess){
+						config.sendSuccess();
 					}
+				},
+				error: function(){
+					view.sendError();
+					return false;
 				}
 			});
-		}
-		
+		}		
 		view.clearForm();
 		controller.enableSubmit();
 	};
@@ -125,7 +134,11 @@
 			if(fieldValidation){
 				model.validateField(fieldValue,formElement,fieldType,fieldName);
 			} else {
-				model.formData[fieldName] = fieldValue;
+				//field validation not required on form element and field is not a submit or reset element
+				if(fieldValue.length && fieldType!=='submit' && fieldType!=='reset'){
+					//if field has value
+					model.formData[fieldName] = fieldValue;
+				}	
 			}
 		});
 
@@ -172,24 +185,26 @@
 	};
 
 	view.sendError = function(){
-
+		console.log('There was an error sending form data to the server');
 	};
 
 	view.sendSuccess = function(){
-		hideForm();
+		view.hideForm();
 		self.form.after('<div class="form-success"><h2>Thank you!</h2><h3>Your message was successfully sent.</h3><a href="#" class="btn">Okay!</a></div>');
 		$('.form-success .btn').on('click',function(e){
 			e.preventDefault();
-			clearForm();
-			showForm();
+			view.removeErrorClass();
+			view.showForm();
 		});
 	};
 
 	var viewPublic = {
+		hideForm: view.hideForm,
+		showForm: view.hideForm,
+		clearForm: view.clearForm,
 		removeErrorClass: view.removeErrorClass,
 		validationError: view.validationError,
-		sendError: view.sendError,
-		sendSuccess: view.sendSuccess
+		sendError: view.sendError
 	};
 
 
@@ -214,11 +229,14 @@
 		formSubmit: controller.formSubmit
 	};
 
-	var init = function(target,actionURL){
+	var init = function(target,options){
 		view.form = $(target);
 		view.formParent = $(target).parent();
-		config.actionURL = (actionURL!==undefined)? actionURL : 'console';
 		view.submitBtn = view.form.find('input[type="submit"]');
+
+		if(typeof(options)==='object' && options.length){
+			$.extend(config,options);
+		}
 
 		if(view.submitBtn){
 			controller.enableSubmit();
