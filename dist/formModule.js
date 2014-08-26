@@ -92,7 +92,7 @@
 				data: data,
 				success:  function(data){
 					if(data.length && config.sendSuccess){
-						config.sendSuccess();
+						config.sendSuccess(data);
 					}
 				},
 				error: function(){
