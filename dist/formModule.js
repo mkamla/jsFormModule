@@ -234,9 +234,7 @@
 		view.formParent = $(target).parent();
 		view.submitBtn = view.form.find('input[type="submit"]');
 
-		if(typeof(options)==='object' && options.length){
-			$.extend(config,options);
-		}
+		$.extend(config,options);
 
 		if(view.submitBtn){
 			controller.enableSubmit();
