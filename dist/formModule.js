@@ -91,9 +91,7 @@
 				url: config.actionURL,
 				data: data,
 				success:  function(data){
-					if(data.length && config.sendSuccess){
-						config.sendSuccess(data);
-					}
+					config.sendSuccess(data);
 				},
 				error: function(){
 					view.sendError();
@@ -228,6 +226,7 @@
 	var controllerPublic = {
 		formSubmit: controller.formSubmit
 	};
+
 
 	var init = function(target,options){
 		view.form = $(target);
